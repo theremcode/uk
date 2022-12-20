@@ -46,10 +46,6 @@ export default {
                 }
                 return this.userTheme;
             }
-        },
-
-        isDark() {
-            return this.theme === "dark";
         }
     },
 

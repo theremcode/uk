@@ -12,7 +12,7 @@
         <!-- Desktop header -->
         <header v-if="! $root.isMobile" class="d-flex flex-wrap justify-content-center py-3 mb-3 border-bottom">
             <router-link to="/dashboard" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-                <object class="bi me-2 ms-4" width="40" height="40" data="/icon.svg" />
+                <object class="bi me-2 ms-4" width="40" height="40" data="./icon.svg" />
                 <span class="fs-4 title">{{ $t("Uptime Kuma") }}</span>
             </router-link>
 
@@ -37,32 +37,19 @@
                             <div class="profile-pic">{{ $root.usernameFirstChar }}</div>
                             <font-awesome-icon icon="angle-down" />
                         </div>
-
-                        <!-- Header's Dropdown Menu -->
                         <ul class="dropdown-menu">
-                            <!-- Username -->
                             <li>
                                 <i18n-t v-if="$root.username != null" tag="span" keypath="signedInDisp" class="dropdown-item-text">
                                     <strong>{{ $root.username }}</strong>
                                 </i18n-t>
                                 <span v-if="$root.username == null" class="dropdown-item-text">{{ $t("signedInDispDisabled") }}</span>
                             </li>
-
                             <li><hr class="dropdown-divider"></li>
-
-                            <!-- Functions -->
                             <li>
-                                <router-link to="/maintenance" class="dropdown-item" :class="{ active: $route.path.includes('manage-maintenance') }">
-                                    <font-awesome-icon icon="wrench" /> {{ $t("Maintenance") }}
-                                </router-link>
-                            </li>
-
-                            <li>
-                                <router-link to="/settings/general" class="dropdown-item" :class="{ active: $route.path.includes('settings') }">
+                                <router-link to="/settings" class="dropdown-item" :class="{ active: $route.path.includes('settings') }">
                                     <font-awesome-icon icon="cog" /> {{ $t("Settings") }}
                                 </router-link>
                             </li>
-
                             <li v-if="$root.loggedIn && $root.socket.token !== 'autoLogin'">
                                 <button class="dropdown-item" @click="$root.logout">
                                     <font-awesome-icon icon="sign-out-alt" />
@@ -78,7 +65,7 @@
         <!-- Mobile header -->
         <header v-else class="d-flex flex-wrap justify-content-center pt-2 pb-2 mb-3">
             <router-link to="/dashboard" class="d-flex align-items-center text-dark text-decoration-none">
-                <object class="bi" width="40" height="40" data="/icon.svg" />
+                <object class="bi" width="40" height="40" data="./icon.svg" />
                 <span class="fs-4 title ms-2">Uptime Kuma</span>
             </router-link>
         </header>
@@ -93,7 +80,7 @@
         <nav v-if="$root.isMobile && $root.loggedIn" class="bottom-nav">
             <router-link to="/dashboard" class="nav-link">
                 <div><font-awesome-icon icon="tachometer-alt" /></div>
-                {{ $t("Home") }}
+                {{ $t("Dashboard") }}
             </router-link>
 
             <router-link to="/list" class="nav-link">
@@ -317,4 +304,5 @@ main {
         background-color: $dark-bg;
     }
 }
+
 </style>

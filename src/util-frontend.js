@@ -1,6 +1,11 @@
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import timezones from "timezones-list";
 import { localeDirection, currentLocale } from "./i18n";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Returns the offset from UTC in hours for the current locale.
