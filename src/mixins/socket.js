@@ -2,7 +2,6 @@ import { io } from "socket.io-client";
 import { useToast } from "vue-toastification";
 import jwtDecode from "jwt-decode";
 import Favico from "favico.js";
-import dayjs from "dayjs";
 const toast = useToast();
 
 let socket;
@@ -34,7 +33,6 @@ export default {
             allowLoginDialog: false,        // Allowed to show login dialog, but "loggedIn" have to be true too. This exists because prevent the login dialog show 0.1s in first before the socket server auth-ed.
             loggedIn: false,
             monitorList: { },
-            maintenanceList: { },
             heartbeatList: { },
             importantHeartbeatList: { },
             avgPingList: { },
@@ -59,6 +57,7 @@ export default {
     },
 
     created() {
+        window.addEventListener("resize", this.onResize);
         this.initSocketIO();
     },
 
@@ -97,8 +96,12 @@ export default {
                 wsHost = protocol + location.host;
             }
 
+            // always starts and ends with '/'
+            const basePath = document.querySelector("head base").getAttribute("href");
+
             socket = io(wsHost, {
                 transports: [ "websocket" ],
+                path: basePath + "socket.io",
             });
 
             socket.on("info", (info) => {
@@ -128,10 +131,6 @@ export default {
                     };
                 });
                 this.monitorList = data;
-            });
-
-            socket.on("maintenanceList", (data) => {
-                this.maintenanceList = data;
             });
 
             socket.on("notificationList", (data) => {
@@ -272,10 +271,6 @@ export default {
             socket.on("cloudflared_message", (res) => this.cloudflared.message = res);
             socket.on("cloudflared_errorMessage", (res) => this.cloudflared.errorMessage = res);
             socket.on("cloudflared_token", (res) => this.cloudflared.cloudflareTunnelToken = res);
-
-            socket.on("initServerTimezone", () => {
-                socket.emit("initServerTimezone", dayjs.tz.guess());
-            });
         },
 
         /**
@@ -454,13 +449,6 @@ export default {
             socket.emit("getMonitorList", callback);
         },
 
-        getMaintenanceList(callback) {
-            if (! callback) {
-                callback = () => { };
-            }
-            socket.emit("getMaintenanceList", callback);
-        },
-
         /**
          * Add a monitor
          * @param {Object} monitor Object representing monitor to add
@@ -470,26 +458,6 @@ export default {
             socket.emit("add", monitor, callback);
         },
 
-        addMaintenance(maintenance, callback) {
-            socket.emit("addMaintenance", maintenance, callback);
-        },
-
-        addMonitorMaintenance(maintenanceID, monitors, callback) {
-            socket.emit("addMonitorMaintenance", maintenanceID, monitors, callback);
-        },
-
-        addMaintenanceStatusPage(maintenanceID, statusPages, callback) {
-            socket.emit("addMaintenanceStatusPage", maintenanceID, statusPages, callback);
-        },
-
-        getMonitorMaintenance(maintenanceID, callback) {
-            socket.emit("getMonitorMaintenance", maintenanceID, callback);
-        },
-
-        getMaintenanceStatusPage(maintenanceID, callback) {
-            socket.emit("getMaintenanceStatusPage", maintenanceID, callback);
-        },
-
         /**
          * Delete monitor by ID
          * @param {number} monitorID ID of monitor to delete
@@ -497,10 +465,6 @@ export default {
          */
         deleteMonitor(monitorID, callback) {
             socket.emit("deleteMonitor", monitorID, callback);
-        },
-
-        deleteMaintenance(maintenanceID, callback) {
-            socket.emit("deleteMaintenance", maintenanceID, callback);
         },
 
         /** Clear the hearbeat list */
@@ -590,12 +554,7 @@ export default {
             for (let monitorID in this.lastHeartbeatList) {
                 let lastHeartBeat = this.lastHeartbeatList[monitorID];
 
-                if (this.monitorList[monitorID].maintenance) {
-                    result[monitorID] = {
-                        text: this.$t("statusMaintenance"),
-                        color: "maintenance",
-                    };
-                } else if (! lastHeartBeat) {
+                if (! lastHeartBeat) {
                     result[monitorID] = unknown;
                 } else if (lastHeartBeat.status === 1) {
                     result[monitorID] = {
@@ -624,7 +583,6 @@ export default {
             let result = {
                 up: 0,
                 down: 0,
-                maintenance: 0,
                 unknown: 0,
                 pause: 0,
             };
@@ -633,9 +591,7 @@ export default {
                 let beat = this.$root.lastHeartbeatList[monitorID];
                 let monitor = this.$root.monitorList[monitorID];
 
-                if (monitor && monitor.maintenance) {
-                    result.maintenance++;
-                } else if (monitor && ! monitor.active) {
+                if (monitor && ! monitor.active) {
                     result.pause++;
                 } else if (beat) {
                     if (beat.status === 1) {

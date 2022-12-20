@@ -42,7 +42,7 @@ export default {
         /** Should the field auto complete */
         autocomplete: {
             type: String,
-            default: "new-password",
+            default: undefined,
         },
         /** Is the input required? */
         required: {

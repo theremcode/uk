@@ -30,8 +30,7 @@
                                 {{ $t("Examples") }}:
                                 <ul>
                                     <li>/var/run/docker.sock</li>
-                                    <li>http://localhost:2375</li>
-                                    <li>https://localhost:2376 (TLS)</li>
+                                    <li>tcp://localhost:2375</li>
                                 </ul>
                             </div>
                         </div>

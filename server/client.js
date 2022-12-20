@@ -4,8 +4,7 @@
 const { TimeLogger } = require("../src/util");
 const { R } = require("redbean-node");
 const { UptimeKumaServer } = require("./uptime-kuma-server");
-const server = UptimeKumaServer.getInstance();
-const io = server.io;
+const io = UptimeKumaServer.getInstance().io;
 const { setting } = require("./util-server");
 const checkVersion = require("./check-version");
 
@@ -122,9 +121,7 @@ async function sendInfo(socket) {
     socket.emit("info", {
         version: checkVersion.version,
         latestVersion: checkVersion.latestVersion,
-        primaryBaseURL: await setting("primaryBaseURL"),
-        serverTimezone: await server.getTimezone(),
-        serverTimezoneOffset: server.getTimezoneOffset(),
+        primaryBaseURL: await setting("primaryBaseURL")
     });
 }
 

@@ -1,8 +1,6 @@
 const https = require("https");
 const http = require("http");
 const CacheableLookup = require("cacheable-lookup");
-const { Settings } = require("./settings");
-const { log } = require("../src/util");
 
 class CacheableDnsHttpAgent {
 
@@ -11,30 +9,12 @@ class CacheableDnsHttpAgent {
     static httpAgentList = {};
     static httpsAgentList = {};
 
-    static enable = false;
-
     /**
-     * Register/Disable cacheable to global agents
+     * Register cacheable to global agents
      */
-    static async update() {
-        log.debug("CacheableDnsHttpAgent", "update");
-        let isEnable = await Settings.get("dnsCache");
-
-        if (isEnable !== this.enable) {
-            log.debug("CacheableDnsHttpAgent", "value changed");
-
-            if (isEnable) {
-                log.debug("CacheableDnsHttpAgent", "enable");
-                this.cacheable.install(http.globalAgent);
-                this.cacheable.install(https.globalAgent);
-            } else {
-                log.debug("CacheableDnsHttpAgent", "disable");
-                this.cacheable.uninstall(http.globalAgent);
-                this.cacheable.uninstall(https.globalAgent);
-            }
-        }
-
-        this.enable = isEnable;
+    static registerGlobalAgent() {
+        this.cacheable.install(http.globalAgent);
+        this.cacheable.install(https.globalAgent);
     }
 
     static install(agent) {
@@ -46,10 +26,6 @@ class CacheableDnsHttpAgent {
      * @return {https.Agent}
      */
     static getHttpsAgent(agentOptions) {
-        if (!this.enable) {
-            return new https.Agent(agentOptions);
-        }
-
         let key = JSON.stringify(agentOptions);
         if (!(key in this.httpsAgentList)) {
             this.httpsAgentList[key] = new https.Agent(agentOptions);
@@ -63,10 +39,6 @@ class CacheableDnsHttpAgent {
      * @return {https.Agents}
      */
     static getHttpAgent(agentOptions) {
-        if (!this.enable) {
-            return new http.Agent(agentOptions);
-        }
-
         let key = JSON.stringify(agentOptions);
         if (!(key in this.httpAgentList)) {
             this.httpAgentList[key] = new http.Agent(agentOptions);

@@ -158,13 +158,6 @@ class Settings {
             delete Settings.cacheList[key];
         }
     }
-
-    static stopCacheCleaner() {
-        if (Settings.cacheCleaner) {
-            clearInterval(Settings.cacheCleaner);
-            Settings.cacheCleaner = null;
-        }
-    }
 }
 
 module.exports = {

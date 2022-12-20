@@ -1,4 +1,4 @@
-import { createI18n } from "vue-i18n/dist/vue-i18n.esm-browser.prod.js";
+import { createI18n } from "vue-i18n/index";
 import en from "./languages/en";
 
 const languageList = {
@@ -6,7 +6,6 @@ const languageList = {
     "zh-HK": "繁體中文 (香港)",
     "bg-BG": "Български",
     "de-DE": "Deutsch (Deutschland)",
-    "de-CH": "Deutsch (Schweiz)",
     "nl-NL": "Nederlands",
     "nb-NO": "Norsk",
     "es-ES": "Español",
@@ -35,7 +34,6 @@ const languageList = {
     "zh-TW": "繁體中文 (台灣)",
     "uk-UA": "Український",
     "th-TH": "ไทย",
-    "el-GR": "Ελληνικά",
 };
 
 let messages = {

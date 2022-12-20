@@ -225,8 +225,4 @@ export default {
     }
 }
 
-.bg-maintenance {
-    background-color: $maintenance;
-}
-
 </style>
